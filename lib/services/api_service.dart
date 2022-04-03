@@ -39,10 +39,10 @@ class ApiService {
 
     if (response.statusCode == 200) {
       List<dynamic> rawPosts = jsonDecode(response.body);
-      List<Post> posts = [];
+      List<PostModel> posts = [];
 
       for (var element in rawPosts) {
-        posts.add(Post.fromMap(element as Map<String, dynamic>));
+        posts.add(PostModel.fromMap(element as Map<String, dynamic>));
       }
 
       return posts;
@@ -51,9 +51,35 @@ class ApiService {
         'error ${response.statusCode}: unable to process request');
   }
 
-  Future<List<Post>> getAllPosts() async {
+  Future<User> getUserFromId(int userId) async {
     List<User> users = await getUsers();
-    List<Post> newPost = [];
+    for (User user in users) {
+      if (user.userId == userId) {
+        return user;
+      }
+    }
+    return Future.error('user not found');
+  }
+
+  Future<List<Post>> getPostList() async {
+    List<PostModel> posts = await getAllPosts();
+    List<Post> newPosts = [];
+    for (PostModel post in posts) {
+      User user = await getUserFromId(post.userId);
+      newPosts.add(Post(
+        postId: post.postId,
+        user: user,
+        title: post.title,
+        body: post.body,
+      ));
+    }
+
+    return newPosts;
+  }
+
+  Future<List<PostModel>> getAllPosts() async {
+    List<User> users = await getUsers();
+    List<PostModel> newPost = [];
 
     for (User user in users) {
       newPost.addAll((await getPost(user)));

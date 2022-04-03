@@ -1,10 +1,12 @@
-class Post {
+import 'package:stacked_api_implementation/feature/user/data_model/user_model.dart';
+
+class PostModel {
   final int userId;
   final int postId;
   final String title;
   final String body;
 
-  Post({
+  PostModel({
     required this.userId,
     required this.postId,
     required this.title,
@@ -12,7 +14,7 @@ class Post {
   });
 
   @override
-  String toString(){
+  String toString() {
     return '''
       userId : $userId
       postId : $postId
@@ -23,12 +25,12 @@ class Post {
     ''';
   }
 
-  factory Post.fromMap(Map<String, dynamic> json) => _postFromMap(json);
+  factory PostModel.fromMap(Map<String, dynamic> json) => _postFromMap(json);
 
   Map<String, dynamic> toMap() => _postToMap(this);
 }
 
-Map<String, dynamic> _postToMap(Post post) {
+Map<String, dynamic> _postToMap(PostModel post) {
   return Map<String, dynamic>.from({
     'userId': post.userId,
     'id': post.postId,
@@ -37,16 +39,30 @@ Map<String, dynamic> _postToMap(Post post) {
   });
 }
 
-Post _postFromMap(Map<String, dynamic> json) {
+PostModel _postFromMap(Map<String, dynamic> json) {
   int userId = json['userId'] as int;
   int postId = json['id'] as int;
   String title = json['title'] as String;
   String body = json['body'] as String;
 
-  return Post(
+  return PostModel(
     userId: userId,
     postId: postId,
     title: title,
     body: body,
   );
+}
+
+class Post {
+  final int postId;
+  final User user;
+  final String title;
+  final String body;
+
+  Post({
+    required this.postId,
+    required this.user,
+    required this.title,
+    required this.body,
+  });
 }

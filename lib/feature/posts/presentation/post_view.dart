@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_api_implementation/feature/constants/utils.dart';
 import 'package:stacked_api_implementation/feature/posts/data_model/post_model.dart';
 import 'package:stacked_api_implementation/feature/posts/presentation/post_view_model.dart';
 
@@ -11,17 +12,22 @@ class PostView extends StatelessWidget {
     return ViewModelBuilder<PostViewModel>.nonReactive(
       viewModelBuilder: () => PostViewModel(),
       builder: (context, model, child) {
-        return SafeArea(
+        return LayoutBuilder(builder: (context, constraints) {
+          return SafeArea(
             child: Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FutureBuilder<List<Post>>(
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                elevation: 1,
+                backgroundColor: Colors.white38,
+                title: const Center(
+                  child: Text('Posts', style: TextStyle(color: Colors.black),),
+                ),
+              ),
+              body: Center(
+                child: FutureBuilder<List<Post>>(
                   future: model.post,
                   builder: (context, AsyncSnapshot<List<Post>> snapshot) {
-                    if (!snapshot.hasData || snapshot.data == null) {
+                    if (!snapshot.hasData) {
                       return const CircularProgressIndicator();
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -29,36 +35,93 @@ class PostView extends StatelessWidget {
                     }
 
                     List<Post> post = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: post.length,
-                      itemBuilder: (context, index) {
-                        return PostCard();
-                      },
+                    return SizedBox(
+                      height: constraints.maxHeight,
+                      child: ListView.builder(
+                        itemCount: post.length,
+                        itemBuilder: (context, index) {
+                          return PostCard(
+                            post: post[index],
+                          );
+                        },
+                      ),
                     );
                   },
                 ),
-                ElevatedButton(
-                  onPressed: () async {},
-                  child: const Text('something'),
-                ),
-              ],
+              ),
             ),
-          ),
-        ));
+          );
+        });
       },
     );
   }
 }
 
-
-
 class PostCard extends StatelessWidget {
-  const PostCard({Key? key}) : super(key: key);
+  final Post post;
+
+  const PostCard({
+    required this.post,
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Card(),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              PostUserImage(post: post),
+              const SizedBox(
+                width: 15,
+              ),
+              Text(
+                post.user.username,
+                style: postTextStyle().copyWith(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+          Text(
+            post.title,
+            style: postTextStyle().copyWith(
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Text(
+            post.body,
+            style: postTextStyle(),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          const Divider(),
+        ],
+      ),
+    );
+  }
+}
+
+class PostUserImage extends StatelessWidget {
+  final Post post;
+
+  const PostUserImage({
+    required this.post,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      foregroundImage: NetworkImage(post.user.avatar.thumbnail),
     );
   }
 }
