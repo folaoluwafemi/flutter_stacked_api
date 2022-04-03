@@ -4,9 +4,8 @@ import 'package:stacked_api_implementation/services/api_service.dart';
 import 'package:stacked_api_implementation/services/locator_service.dart';
 
 class PostViewModel extends BaseViewModel {
-  var service = locator.
 
-  final List<Post> _posts = [];
+  final Future<List<Post>> _posts = locator<ApiService>().getAllPosts();
 
-  List<Post> get post => _posts;
+  Future<List<Post>> get post => _posts;
 }
