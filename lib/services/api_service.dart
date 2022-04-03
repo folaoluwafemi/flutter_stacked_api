@@ -10,7 +10,7 @@ Uri url = Uri.parse('https://engineering.league.dev/challenge/api');
 
 class ApiService {
   final http.Client client = http.Client();
-
+  ///beginning of Api getter methods
   Future<List<User>> getUsers() async {
     Uri userUrl = Uri.parse('$url/users');
     http.Response response =
@@ -51,6 +51,15 @@ class ApiService {
         'error ${response.statusCode}: unable to process request');
   }
 
+  Future<List<PostModel>> getAllPosts() async {
+    List<User> users = await getUsers();
+    List<PostModel> newPost = [];
+
+    for (User user in users) {
+      newPost.addAll((await getPost(user)));
+    }
+    return newPost;
+  }
   Future<User> getUserFromId(int userId) async {
     List<User> users = await getUsers();
     for (User user in users) {
@@ -61,6 +70,10 @@ class ApiService {
     return Future.error('user not found');
   }
 
+  ///End of Api getter methods
+
+  ///For the main application
+  ///the application will only use this method
   Future<List<Post>> getPostList() async {
     List<PostModel> posts = await getAllPosts();
     List<Post> newPosts = [];
@@ -75,15 +88,5 @@ class ApiService {
     }
 
     return newPosts;
-  }
-
-  Future<List<PostModel>> getAllPosts() async {
-    List<User> users = await getUsers();
-    List<PostModel> newPost = [];
-
-    for (User user in users) {
-      newPost.addAll((await getPost(user)));
-    }
-    return newPost;
   }
 }

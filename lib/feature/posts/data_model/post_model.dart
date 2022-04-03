@@ -1,5 +1,5 @@
 import 'package:stacked_api_implementation/feature/user/data_model/user_model.dart';
-
+///PostModel that references Api data
 class PostModel {
   final int userId;
   final int postId;
@@ -53,6 +53,7 @@ PostModel _postFromMap(Map<String, dynamic> json) {
   );
 }
 
+///post model that references application data
 class Post {
   final int postId;
   final User user;
