@@ -21,10 +21,20 @@ class PostView extends StatelessWidget {
                 FutureBuilder<List<Post>>(
                   future: model.post,
                   builder: (context, AsyncSnapshot<List<Post>> snapshot) {
-                    if(!snapshot.hasData){
+                    if (!snapshot.hasData || snapshot.data == null) {
                       return const CircularProgressIndicator();
                     }
-                    if(snapshot.connectionState == ConnectionState.waiting)
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    }
+
+                    List<Post> post = snapshot.data!;
+                    return ListView.builder(
+                      itemCount: post.length,
+                      itemBuilder: (context, index) {
+                        return PostCard();
+                      },
+                    );
                   },
                 ),
                 ElevatedButton(
@@ -36,6 +46,19 @@ class PostView extends StatelessWidget {
           ),
         ));
       },
+    );
+  }
+}
+
+
+
+class PostCard extends StatelessWidget {
+  const PostCard({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Card(),
     );
   }
 }
